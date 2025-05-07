@@ -8,21 +8,21 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 255, 252, 235),
       body: Center(
         child:  Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
-            'assets/images/shelfie_logo.png',
-            height:100.0,
+            'assets/images/logo.png',
+            height: 200.0,
           ),
           SizedBox(height:20),
           Text(
             'Keep track of your books!',
             style: TextStyle(
               fontSize: 24,
-              color: Colors.black,
+              color: const Color.fromARGB(255, 35, 73, 92),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -32,7 +32,7 @@ class WelcomeScreen extends StatelessWidget {
               Navigator.pushReplacementNamed(context, '/home');
             },
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,
+              foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 35, 73, 92),
               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)
             ), child: Text('Continue')),
           ]),

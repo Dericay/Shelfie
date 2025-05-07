@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shelfie/screens/search_screen.dart';
 import 'package:shelfie/screens/welcome_screen.dart';
 
 void main() {
@@ -13,10 +14,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Shelfie',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: WelcomeScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const WelcomeScreen(),
+        '/home': (context) => const SearchScreen()
+      }
     );
   }
 }
