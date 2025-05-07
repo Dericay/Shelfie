@@ -1,7 +1,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -36,8 +35,7 @@ class WelcomeScreen extends StatelessWidget {
               foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,
               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)
             ), child: Text('Continue')),
-          ),
-        ]
+          ]),
       ),
     );
   }

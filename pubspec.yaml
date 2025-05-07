@@ -16,7 +16,8 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter:
-  assets:
-  - assets/images/shelfie_logo.png
   uses-material-design: true
+  assets:
+    - assets/images/logo.png
+
 
