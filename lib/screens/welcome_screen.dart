@@ -29,7 +29,7 @@ class WelcomeScreen extends StatelessWidget {
           SizedBox(height: 20,),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushReplacementNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/discover');
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 35, 73, 92),

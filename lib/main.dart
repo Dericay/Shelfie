@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shelfie/screens/search_screen.dart';
+import 'package:shelfie/screens/main_screen.dart';
 import 'package:shelfie/screens/welcome_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,8 +17,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const WelcomeScreen(),
-        '/home': (context) => const SearchScreen()
-      }
+        '/discover': (context) => const MainScreen(),
+      },
     );
   }
 }
