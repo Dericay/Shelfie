@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shelfie/models/books.dart';
 import 'package:shelfie/screens/main_screen.dart';
 import 'package:shelfie/screens/welcome_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(BookAdapter());
+
+  await Hive.openBox<Book>('savedBooks');
+
   runApp(const MyApp());
 }
 

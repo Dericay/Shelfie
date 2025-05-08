@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shelfie/screens/myshelf_screen.dart';
 import 'package:shelfie/screens/search_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     Center(child: Text('Home')),
     SearchScreen(),
-    Center(child: Text('My Shelf'))
+    MyShelfScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -31,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'My shelf'),
+          BottomNavigationBarItem(icon: Icon(Icons.shelves), label: 'My shelf'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],

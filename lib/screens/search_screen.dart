@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:shelfie/models/books.dart';
 import 'package:shelfie/services/google_book_api.dart';
 
 
@@ -62,7 +64,7 @@ class _SearchScreenState extends State<SearchScreen> {
             height: 50,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              children: ['All','fiction', 'science', 'history', 'art']
+              children: ['All','Fiction', 'Science', 'History']
                   .map((category) => Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: ChoiceChip(
@@ -77,17 +79,26 @@ class _SearchScreenState extends State<SearchScreen> {
                   .toList(),
             ),
           ),
-          DropdownButton<String>(
+          Align(
+            alignment: Alignment.centerRight,
+            child: DropdownButton<String>(
+            padding: const EdgeInsets.symmetric( horizontal: 8.0),
+            style: TextStyle(
+              color: Colors.grey,
+            ),
             value: selectedSort,
             items: [
               DropdownMenuItem(value: 'latest', child: Text('Latest')),
               DropdownMenuItem(value: 'revelance', child: Text('Most popular'))
             ],
+            
             onChanged: (value) {
               setState(() => selectedSort = value!);
               fetchBooks(selectedCategory);
             },
+          )
           ),
+          
           Expanded(
             child: isLoading
                 ? Center(child: CircularProgressIndicator())
@@ -101,24 +112,32 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     itemCount: books.length,
                     itemBuilder: (context, index) {
-                      final book = books[index]['volumeInfo'];
+                      final bookItem = books[index];
+                      final volumeInfo = bookItem['volumeInfo'];
+                      final bookId = bookItem['id'];
+                      final bookTitle = volumeInfo['title'] ?? 'No title';
+                      final bookAuthor = (volumeInfo['authors'] as List?)?.join(', ') ?? 'Unknown author';
+                      final imageUrl = volumeInfo['imageLinks']?['thumbnail'] ?? '';
                       return Card(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: book['imageLinks'] != null
-                                  ? Image.network(
-                                      book['imageLinks']['thumbnail'],
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                    )
-                                  : Container(color: Colors.grey),
-                            ),
+                            
+                    child: imageUrl.isNotEmpty
+                        ? Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(color: Colors.grey),
+                          )
+                        : Container(color: Colors.grey),
+                  ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                book['title'] ?? 'No title',
+                                bookTitle,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -126,15 +145,35 @@ class _SearchScreenState extends State<SearchScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Text(
-                                book['authors'] != null ? (book['authors'] as List).join(', ') : 'Unknown author',
+                                bookAuthor,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                             ),
+                            IconButton(
+                              icon: Icon(Icons.bookmark_border),
+                              onPressed: () async {
+                                var box = Hive.box<Book>('savedBooks');
+                                final book = Book(
+                                  id: bookId,
+                                  title: bookTitle,
+                                  author: bookAuthor,
+                                  imageUrl: imageUrl,
+                                );
+                                await box.put(book.id, book);
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Saved for later!'),
+                                ));
+                              },
+                            )
                           ],
+                          
                         ),
+                        
                       );
+                      
                     },
                   ),
           ),
