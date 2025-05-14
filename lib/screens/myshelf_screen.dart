@@ -69,6 +69,31 @@ class MyShelfScreen extends StatelessWidget {
                         );
                       },
                     ),
+TextButton(
+  child: const Text('Set as Reading'),
+  onPressed: () async {
+    var readingBox = Hive.box<Book>('readingBooks');
+
+    // Create a new Book instance with the same values
+    final readingBook = Book(
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      imageUrl: book.imageUrl,
+    );
+
+    // Save to readingBooks
+    await readingBox.put(readingBook.id, readingBook);
+
+    // Remove from savedBooks
+    await box.delete(book.id);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Book moved to Reading')),
+    );
+  },
+),
+
                   ],
                 ),
               );

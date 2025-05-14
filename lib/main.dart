@@ -13,6 +13,7 @@ Future<void> main() async {
   Hive.registerAdapter(BookAdapter());
 
   await Hive.openBox<Book>('savedBooks');
+  await Hive.openBox<Book>('readingBooks');
 
   runApp(const MyApp());
 }
