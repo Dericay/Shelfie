@@ -8,9 +8,7 @@ class MyShelfScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Shelf"),
-      ),
+      appBar: AppBar(title: const Text("My Shelf")),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<Book>('savedBooks').listenable(),
         builder: (context, Box<Book> box, _) {
@@ -35,13 +33,14 @@ class MyShelfScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: book.imageUrl.isNotEmpty
-                          ? Image.network(
-                              book.imageUrl,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            )
-                          : Container(color: Colors.grey),
+                      child:
+                          book.imageUrl != null && book.imageUrl!.isNotEmpty
+                              ? Image.network(
+                                book.imageUrl!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              )
+                              : Container(color: Colors.grey),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -54,7 +53,7 @@ class MyShelfScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
-                        book.author,
+                        book.authors.join(', '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 12, color: Colors.grey),
@@ -65,35 +64,36 @@ class MyShelfScreen extends StatelessWidget {
                       onPressed: () async {
                         await box.delete(book.id);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Book removed from shelf')),
+                          const SnackBar(
+                            content: Text('Book removed from shelf'),
+                          ),
                         );
                       },
                     ),
-TextButton(
-  child: const Text('Set as Reading'),
-  onPressed: () async {
-    var readingBox = Hive.box<Book>('readingBooks');
+                    TextButton(
+                      child: const Text('Set as Reading'),
+                      onPressed: () async {
+                        final readingBook = Book(
+                          id: book.id,
+                          title: book.title,
+                          authors: List<String>.from(book.authors),
+                          imageUrl: book.imageUrl,
+                          totalPages: book.totalPages,
+                          pagesRead: book.pagesRead,
+                        );
+                        await Hive.box<Book>(
+                          'readingBooks',
+                        ).put(book.id, readingBook);
 
-    // Create a new Book instance with the same values
-    final readingBook = Book(
-      id: book.id,
-      title: book.title,
-      author: book.author,
-      imageUrl: book.imageUrl,
-    );
+                        await box.delete(book.id);
 
-    // Save to readingBooks
-    await readingBox.put(readingBook.id, readingBook);
-
-    // Remove from savedBooks
-    await box.delete(book.id);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Book moved to Reading')),
-    );
-  },
-),
-
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Book moved to Reading'),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               );
