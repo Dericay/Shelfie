@@ -92,10 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
               value: selectedSort,
               items: [
                 DropdownMenuItem(value: 'latest', child: Text('Latest')),
-                DropdownMenuItem(
-                  value: 'revelance',
-                  child: Text('Most popular'),
-                ),
+                DropdownMenuItem(value: 'title', child: Text('Most popular')),
               ],
 
               onChanged: (value) {

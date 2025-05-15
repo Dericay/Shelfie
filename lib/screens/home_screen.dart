@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               final book = readingBooks[index];
               print('Book: ${book.title}, totalPages: ${book.totalPages}');
+              print('Hive key: ${book.key}');
 
               return BookCard(
                 title: book.title,

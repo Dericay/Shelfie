@@ -75,20 +75,25 @@ class BookCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text("${(progress * totalPages).toStringAsFixed(0)}% read"),
+                  Text("${(progress * 100).toStringAsFixed(0)}% read"),
                   FilledButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        Colors.black,
+                      ),
+                    ),
                     onPressed: () async {
-                      showDialog(
+                      final newPage = await showDialog<int>(
                         context: context,
                         builder:
                             (context) => UpdateProgressDialog(
                               pagesRead: pagesRead,
                               totalPages: totalPages,
-                              onSave: (newPage) {
-                                onUpdateProgress(newPage);
-                              },
                             ),
                       );
+                      if (newPage != null) {
+                        onUpdateProgress(newPage);
+                      }
                     },
                     child: const Text('Update progress'),
                   ),

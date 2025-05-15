@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class UpdateProgressDialog extends StatefulWidget {
   final int pagesRead;
   final int totalPages;
-  final void Function(int) onSave;
 
   const UpdateProgressDialog({
     super.key,
     required this.pagesRead,
     required this.totalPages,
-    required this.onSave,
   });
 
   @override
