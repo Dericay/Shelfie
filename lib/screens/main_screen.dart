@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shelfie/screens/home_screen.dart';
 import 'package:shelfie/screens/myshelf_screen.dart';
 import 'package:shelfie/screens/search_screen.dart';
 
@@ -13,7 +14,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 1;
 
   final List<Widget> _pages = [
-    Center(child: Text('Home')),
+    HomeScreen(),
     SearchScreen(),
     MyShelfScreen(),
   ];
