@@ -102,7 +102,15 @@ class _SearchScreenState extends State<SearchScreen> {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children:
-                  ['All', 'Fiction', 'Science', 'History'].map((category) {
+                  [
+                    'All',
+                    'Fiction',
+                    'Drama',
+                    'Science',
+                    'Philosophy',
+                    'History',
+                    'Travel',
+                  ].map((category) {
                     final bool isSelected = selectedCategory == category;
 
                     return Padding(
