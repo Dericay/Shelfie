@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:shelfie/models/books.dart';
 import 'package:shelfie/services/google_book_api.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shelfie/widgets/book_card.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -180,72 +181,17 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       itemCount: books.length,
                       itemBuilder: (context, index) {
-                        final book = books[index] as Book;
-
-                        final bookTitle = book.title;
-                        final authorsList = book.authors;
-                        final authorsText = authorsList.join(', ');
-                        final imageUrl = book.imageUrl ?? '';
-
-                        return Card(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child:
-                                    imageUrl.isNotEmpty
-                                        ? Image.network(
-                                          imageUrl,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          color: Colors.grey[300],
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Icon(
-                                                    Icons.broken_image,
-                                                    size: 100,
-                                                  ),
-                                        )
-                                        : const Icon(
-                                          Icons.book,
-                                          size: 50,
-                                          color: Colors.grey,
-                                        ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  bookTitle,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0,
-                                ),
-                                child: Text(
-                                  authorsText,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.bookmark_border),
-                                onPressed: () async {
-                                  var box = Hive.box<Book>('savedBooks');
-                                  await box.put(book.id, book);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Saved for later!')),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                        final book = books[index];
+                        return BookCard(
+                          book: book,
+                          buttonIcon: Icons.bookmark_border,
+                          onButtonPressed: () async {
+                            var box = Hive.box<Book>('savedBooks');
+                            await box.put(book.id, book);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Saved for later!')),
+                            );
+                          },
                         );
                       },
                     ),

@@ -1,120 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:shelfie/widgets/update_progress_dialog.dart';
+import 'package:shelfie/models/books.dart'; // Update path as needed
 
 class BookCard extends StatelessWidget {
-  final String title;
-  final List<String> authors;
-  final String? imageUrl;
-  final Widget? trailing;
-  final int pagesRead;
-  final int totalPages;
-  final void Function(int newPage) onUpdateProgress;
+  final Book book;
+  final IconData buttonIcon;
+  final VoidCallback onButtonPressed;
+  final VoidCallback? onSetAsReading;
+  final bool showSetAsReadingButton; // <-- NEW
 
   const BookCard({
     super.key,
-    required this.title,
-    required this.authors,
-    this.imageUrl,
-    this.trailing,
-    required this.pagesRead,
-    required this.totalPages,
-    required this.onUpdateProgress,
+    required this.book,
+    required this.buttonIcon,
+    required this.onButtonPressed,
+    this.onSetAsReading,
+    this.showSetAsReadingButton = false, // <-- default false
   });
 
   @override
   Widget build(BuildContext context) {
-    final fixedImageUrl = imageUrl?.replaceFirst('http://', 'https://');
-    final progress = totalPages > 0 ? pagesRead / totalPages : 0.0;
-
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      elevation: 4,
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              bottomLeft: Radius.circular(12),
-            ),
-            child: SizedBox(
-              width: 100,
-              height: 150,
-              child:
-                  fixedImageUrl != null
-                      ? Image.network(
-                        fixedImageUrl,
-                        width: 100,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder:
-                            (context, error, stackTrace) =>
-                                const Icon(Icons.broken_image),
-                      )
-                      : const Icon(Icons.book, size: 50, color: Colors.grey),
-            ),
-          ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFFFFD60A),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text("${(progress * 100).toStringAsFixed(0)}% read"),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll<Color>(
-                        Color(0xFF0C3343),
-                      ),
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ), // Rounded corners
-                        ),
-                      ),
-                    ),
-                    onPressed: () async {
-                      final newPage = await showDialog<int>(
-                        context: context,
-                        builder:
-                            (context) => UpdateProgressDialog(
-                              pagesRead: pagesRead,
-                              totalPages: totalPages,
-                            ),
-                      );
-                      if (newPage != null) {
-                        onUpdateProgress(newPage);
-                      }
-                    },
-                    child: const Text(
-                      'Update progress',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            child:
+                book.imageUrl != null && book.imageUrl!.isNotEmpty
+                    ? Image.network(
+                      book.imageUrl!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    )
+                    : Container(color: Colors.grey),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              book.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (trailing != null) trailing!,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              book.authors.join(', '),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ),
+          IconButton(icon: Icon(buttonIcon), onPressed: onButtonPressed),
+          if (showSetAsReadingButton && onSetAsReading != null)
+            ElevatedButton(
+              child: const Text('Set as Reading'),
+              onPressed: onSetAsReading,
+            ),
         ],
       ),
     );

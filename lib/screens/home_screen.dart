@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shelfie/models/books.dart';
-import 'package:shelfie/widgets/book_card.dart';
+import 'package:shelfie/widgets/booklist_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               final book = readingBooks[index];
 
-              return BookCard(
+              return BookListCard(
                 title: book.title,
                 authors: book.authors,
                 imageUrl:

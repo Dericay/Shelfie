@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shelfie/models/books.dart';
+import 'package:shelfie/widgets/book_card.dart';
 
 class MyShelfScreen extends StatelessWidget {
   const MyShelfScreen({super.key});
@@ -40,40 +41,14 @@ class MyShelfScreen extends StatelessWidget {
             itemCount: savedBooks.length,
             itemBuilder: (context, index) {
               final book = savedBooks[index];
-              return Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child:
-                          book.imageUrl != null && book.imageUrl!.isNotEmpty
-                              ? Image.network(
-                                book.imageUrl!,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                              )
-                              : Container(color: Colors.grey),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        book.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        book.authors.join(', '),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () async {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: BookCard(
+                      book: book,
+                      buttonIcon: Icons.delete,
+                      onButtonPressed: () async {
                         await box.delete(book.id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -81,10 +56,7 @@ class MyShelfScreen extends StatelessWidget {
                           ),
                         );
                       },
-                    ),
-                    TextButton(
-                      child: const Text('Set as Reading'),
-                      onPressed: () async {
+                      onSetAsReading: () async {
                         final readingBook = Book(
                           id: book.id,
                           title: book.title,
@@ -97,18 +69,16 @@ class MyShelfScreen extends StatelessWidget {
                         await Hive.box<Book>(
                           'readingBooks',
                         ).put(book.id, readingBook);
-
-                        await box.delete(book.id);
-
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Book moved to Reading'),
+                          SnackBar(
+                            content: Text('Set "${book.title}" as reading'),
                           ),
                         );
                       },
+                      showSetAsReadingButton: true, // <-- ONLY in MyShelfScreen
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           );
