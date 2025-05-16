@@ -71,15 +71,22 @@ class BookCard extends StatelessWidget {
                     value: progress,
                     backgroundColor: Colors.grey[200],
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.greenAccent,
+                      Color(0xFFFFD60A),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text("${(progress * 100).toStringAsFixed(0)}% read"),
-                  FilledButton(
+                  ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll<Color>(
-                        Colors.black,
+                        Color(0xFF0C3343),
+                      ),
+                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ), // Rounded corners
+                        ),
                       ),
                     ),
                     onPressed: () async {
@@ -95,7 +102,13 @@ class BookCard extends StatelessWidget {
                         onUpdateProgress(newPage);
                       }
                     },
-                    child: const Text('Update progress'),
+                    child: const Text(
+                      'Update progress',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),

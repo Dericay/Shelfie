@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Shelfie',
+      theme: ThemeData(fontFamily: 'Poppins'),
       initialRoute: '/',
       routes: {
         '/': (context) => const WelcomeScreen(),

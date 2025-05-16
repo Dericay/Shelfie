@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shelfie/models/books.dart';
 import 'package:shelfie/widgets/book_card.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Home")),
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Home',
+            style: GoogleFonts.poppins(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<Book>('readingBooks').listenable(),
         builder: (context, Box<Book> box, _) {
@@ -27,8 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: readingBooks.length,
             itemBuilder: (context, index) {
               final book = readingBooks[index];
-              print('Book: ${book.title}, totalPages: ${book.totalPages}');
-              print('Hive key: ${book.key}');
 
               return BookCard(
                 title: book.title,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shelfie/models/books.dart';
 
@@ -8,7 +9,18 @@ class MyShelfScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Shelf")),
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'My books',
+            style: GoogleFonts.poppins(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<Book>('savedBooks').listenable(),
         builder: (context, Box<Book> box, _) {
@@ -80,6 +92,7 @@ class MyShelfScreen extends StatelessWidget {
                           imageUrl: book.imageUrl,
                           totalPages: book.totalPages,
                           pagesRead: book.pagesRead,
+                          publishedDate: book.publishedDate,
                         );
                         await Hive.box<Book>(
                           'readingBooks',

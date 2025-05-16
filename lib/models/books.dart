@@ -22,6 +22,9 @@ class Book extends HiveObject {
   @HiveField(5)
   int totalPages;
 
+  @HiveField(6)
+  String? publishedDate;
+
   Book({
     required this.id,
     required this.title,
@@ -29,6 +32,7 @@ class Book extends HiveObject {
     this.imageUrl,
     this.pagesRead = 0,
     required this.totalPages,
+    required this.publishedDate,
   });
 
   /// 👇 Factory to create a Book from Google Books API data
@@ -45,6 +49,7 @@ class Book extends HiveObject {
           ['Unknown Author'],
       imageUrl: volumeInfo['imageLinks']?['thumbnail'],
       totalPages: volumeInfo['pageCount'] ?? 0,
+      publishedDate: volumeInfo['publishedDate'],
     );
   }
 }

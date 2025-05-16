@@ -23,6 +23,7 @@ class BookAdapter extends TypeAdapter<Book> {
       imageUrl: fields[3] as String,
       pagesRead: fields[4] as int,
       totalPages: fields[5] as int,
+      publishedDate: fields[6] as String,
     );
   }
 
@@ -41,7 +42,9 @@ class BookAdapter extends TypeAdapter<Book> {
       ..writeByte(4)
       ..write(obj.pagesRead)
       ..writeByte(5)
-      ..write(obj.totalPages);
+      ..write(obj.totalPages)
+      ..writeByte(6)
+      ..write(obj.publishedDate);
   }
 
   @override

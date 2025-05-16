@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:shelfie/models/books.dart';
 import 'package:shelfie/services/google_book_api.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -14,7 +15,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List books = [];
-  String selectedCategory = 'fiction';
+  String selectedCategory = 'All';
   bool isLoading = false;
   String selectedSort = 'latest';
 
@@ -24,14 +25,28 @@ class _SearchScreenState extends State<SearchScreen> {
     fetchBooks(selectedCategory);
   }
 
+  DateTime _parseDate(String? dateString) {
+    try {
+      return DateTime.parse(dateString ?? '');
+    } catch (_) {
+      return DateTime(1900);
+    }
+  }
+
   Future<void> fetchBooks(String query) async {
     setState(() => isLoading = true);
     try {
       final fetchedBooks = await GoogleBookApi.fetchBooks(
         query,
-        orderBy: selectedSort == 'latest' ? 'newest' : 'relevance',
+        orderBy: selectedSort == 'latest' ? 'newest' : 'null',
       );
-
+      fetchedBooks.sort((a, b) {
+        final dateA = _parseDate(a.publishedDate);
+        final dateB = _parseDate(b.publishedDate);
+        return selectedSort == 'latest'
+            ? dateB.compareTo(dateA)
+            : dateA.compareTo(dateB);
+      });
       setState(() => books = fetchedBooks);
     } catch (e) {
       if (kDebugMode) {
@@ -47,43 +62,84 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Discover books',
+              style: GoogleFonts.poppins(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: _searchController,
               onSubmitted: fetchBooks,
               decoration: InputDecoration(
-                hintText: 'Search books...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                hintText: 'Search books, authors...',
+                filled: true,
+                fillColor: Colors.white,
+                hintStyle: TextStyle(color: Colors.grey[300]),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 14.0,
+                  horizontal: 16.0,
                 ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                prefixIcon: Icon(Icons.search),
+                prefixIconColor: Colors.grey[300],
               ),
             ),
           ),
           SizedBox(
-            height: 50,
+            height: 35,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children:
-                  ['All', 'Fiction', 'Science', 'History']
-                      .map(
-                        (category) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: ChoiceChip(
-                            label: Text(category),
-                            selected: selectedCategory == category,
-                            onSelected: (selected) {
-                              setState(() => selectedCategory = category);
-                              fetchBooks(category == 'all' ? '' : category);
-                            },
+                  ['All', 'Fiction', 'Science', 'History'].map((category) {
+                    final bool isSelected = selectedCategory == category;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Material(
+                        color:
+                            isSelected
+                                ? const Color(0xFF0C3343)
+                                : Colors.grey[200],
+                        elevation: isSelected ? 6 : 0,
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() => selectedCategory = category);
+                            fetchBooks(category == '' ? '' : category);
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            width: 100,
+                            height: 40,
+                            alignment: Alignment.center,
+                            child: Text(
+                              category,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                           ),
                         ),
-                      )
-                      .toList(),
+                      ),
+                    );
+                  }).toList(),
             ),
           ),
+
           Align(
             alignment: Alignment.centerRight,
             child: DropdownButton<String>(
@@ -91,8 +147,8 @@ class _SearchScreenState extends State<SearchScreen> {
               style: TextStyle(color: Colors.grey),
               value: selectedSort,
               items: [
-                DropdownMenuItem(value: 'latest', child: Text('Latest')),
-                DropdownMenuItem(value: 'title', child: Text('Most popular')),
+                DropdownMenuItem(value: 'latest', child: Text('Newest')),
+                DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
               ],
 
               onChanged: (value) {
