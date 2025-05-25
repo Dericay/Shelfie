@@ -69,6 +69,7 @@ class MyShelfScreen extends StatelessWidget {
                         await Hive.box<Book>(
                           'readingBooks',
                         ).put(book.id, readingBook);
+                        await box.delete(book.id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Set "${book.title}" as reading'),

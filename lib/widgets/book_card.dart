@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:shelfie/models/books.dart'; // Update path as needed
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shelfie/models/books.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
-  final IconData buttonIcon;
-  final VoidCallback onButtonPressed;
+  final IconData? buttonIcon;
+  final VoidCallback? onButtonPressed;
   final VoidCallback? onSetAsReading;
-  final bool showSetAsReadingButton; // <-- NEW
+  final bool showSetAsReadingButton;
 
   const BookCard({
     super.key,
     required this.book,
-    required this.buttonIcon,
-    required this.onButtonPressed,
+    this.buttonIcon,
+    this.onButtonPressed,
     this.onSetAsReading,
-    this.showSetAsReadingButton = false, // <-- default false
+    this.showSetAsReadingButton = false, 
   });
 
   @override
@@ -39,6 +40,7 @@ class BookCard extends StatelessWidget {
               book.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
           ),
           Padding(
@@ -47,15 +49,9 @@ class BookCard extends StatelessWidget {
               book.authors.join(', '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF6C6C6C)),
             ),
           ),
-          IconButton(icon: Icon(buttonIcon), onPressed: onButtonPressed),
-          if (showSetAsReadingButton && onSetAsReading != null)
-            ElevatedButton(
-              child: const Text('Set as Reading'),
-              onPressed: onSetAsReading,
-            ),
         ],
       ),
     );

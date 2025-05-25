@@ -122,7 +122,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ? const Color(0xFF0C3343)
                                 : Colors.grey[200],
                         elevation: isSelected ? 6 : 0,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                         child: InkWell(
                           onTap: () {
                             setState(() => selectedCategory = category);
@@ -135,10 +135,9 @@ class _SearchScreenState extends State<SearchScreen> {
                             alignment: Alignment.center,
                             child: Text(
                               category,
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: isSelected ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Poppins',
                               ),
                             ),
                           ),
@@ -168,34 +167,65 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
 
           Expanded(
-            child:
-                isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : GridView.builder(
-                      padding: const EdgeInsets.all(8),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.6,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      itemCount: books.length,
-                      itemBuilder: (context, index) {
-                        final book = books[index];
-                        return BookCard(
-                          book: book,
-                          buttonIcon: Icons.bookmark_border,
-                          onButtonPressed: () async {
-                            var box = Hive.box<Book>('savedBooks');
-                            await box.put(book.id, book);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Saved for later!')),
-                            );
-                          },
-                        );
-                      },
-                    ),
+  child: isLoading
+      ? Center(child: CircularProgressIndicator())
+      : GridView.builder(
+          padding: const EdgeInsets.all(8),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.6,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
           ),
+          itemCount: books.length,
+          itemBuilder: (context, index) {
+            final book = books[index];
+
+            return Stack(
+              children: [
+                BookCard(book: book), // Your custom book card
+                Positioned(
+  top: 8,
+  right: 8,
+  child: Container(
+    width: 32,
+    height: 32,
+
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(6), 
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black26,
+          blurRadius: 2,
+          offset: Offset(2, 2),
+        ),
+      ],
+    ),
+    child: Center(
+      child: IconButton(
+        padding: EdgeInsets.zero,
+      icon: Icon(Icons.bookmark_border, color: Colors.black),
+
+
+      onPressed: () async {
+        var box = Hive.box<Book>('savedBooks');
+        await box.put(book.id, book);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Saved for later!')),
+        );
+      },
+      )
+
+    ),
+  ),
+),
+
+              ],
+            );
+          },
+        ),
+          )
         ],
       ),
     );

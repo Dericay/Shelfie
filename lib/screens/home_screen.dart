@@ -39,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: readingBooks.length,
             itemBuilder: (context, index) {
               final book = readingBooks[index];
-
               return BookListCard(
                 title: book.title,
                 authors: book.authors,
@@ -61,3 +60,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
