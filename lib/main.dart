@@ -10,14 +10,7 @@ Future<void> main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(BookAdapter());
-
-  await Hive.openBox<Book>('savedBooks');
-  await Hive.openBox<Book>('readingBooks');
-
-
-
-
-
+  await Hive.openBox<Book>('books');
 
   runApp(const MyApp());
 }

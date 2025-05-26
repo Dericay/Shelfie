@@ -23,7 +23,10 @@ class Book extends HiveObject {
   int totalPages;
 
   @HiveField(6)
-  String? publishedDate;
+  String publishedDate;
+
+  @HiveField(7)
+  String? readingStatus;
 
   Book({
     required this.id,
@@ -33,9 +36,9 @@ class Book extends HiveObject {
     this.pagesRead = 0,
     required this.totalPages,
     required this.publishedDate,
+    this.readingStatus,
   });
 
-  /// 👇 Factory to create a Book from Google Books API data
   factory Book.fromGoogleApi(Map<String, dynamic> json) {
     final volumeInfo = json['volumeInfo'] ?? {};
 

@@ -28,17 +28,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: ValueListenableBuilder(
-        valueListenable: Hive.box<Book>('readingBooks').listenable(),
+        valueListenable: Hive.box<Book>('books').listenable(),
         builder: (context, Box<Book> box, _) {
           if (box.isEmpty) {
-            return const Center(child: Text('Reading no books'));
+            return const Center(child: Text('No books saved.'));
           }
-          final readingBooks = box.values.toList();
+          final savedBooks =
+              box.values
+                  .where((b) => b.readingStatus == "set_as_reading")
+                  .toList();
           return ListView.builder(
             padding: const EdgeInsets.all(8),
-            itemCount: readingBooks.length,
+            itemCount: savedBooks.length,
             itemBuilder: (context, index) {
-              final book = readingBooks[index];
+              final book = savedBooks[index];
               return BookListCard(
                 title: book.title,
                 authors: book.authors,
@@ -60,4 +63,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

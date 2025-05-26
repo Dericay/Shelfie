@@ -23,60 +23,36 @@ class MyShelfScreen extends StatelessWidget {
         ),
       ),
       body: ValueListenableBuilder(
-        valueListenable: Hive.box<Book>('savedBooks').listenable(),
+        valueListenable: Hive.box<Book>('books').listenable(),
         builder: (context, Box<Book> box, _) {
           if (box.isEmpty) {
             return const Center(child: Text('No books saved.'));
           }
+          final savedBooks =
+              box.values
+                  .where(
+                    (b) =>
+                        b.readingStatus != null &&
+                        (b.readingStatus == "read" ||
+                            b.readingStatus == "save_for_later"),
+                  )
+                  .toList();
 
-          final savedBooks = box.values.toList();
-          return GridView.builder(
+          return ListView.builder(
             padding: const EdgeInsets.all(8),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.6,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
             itemCount: savedBooks.length,
             itemBuilder: (context, index) {
               final book = savedBooks[index];
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: BookCard(
-                      book: book,
-                      buttonIcon: Icons.delete,
-                      onButtonPressed: () async {
-                        await box.delete(book.id);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Book removed from shelf'),
-                          ),
-                        );
-                      },
-                      onSetAsReading: () async {
-                        final readingBook = Book(
-                          id: book.id,
-                          title: book.title,
-                          authors: List<String>.from(book.authors),
-                          imageUrl: book.imageUrl,
-                          totalPages: book.totalPages,
-                          pagesRead: book.pagesRead,
-                          publishedDate: book.publishedDate,
-                        );
-                        await Hive.box<Book>(
-                          'readingBooks',
-                        ).put(book.id, readingBook);
-                        await box.delete(book.id);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Set "${book.title}" as reading'),
-                          ),
-                        );
-                      },
-                      showSetAsReadingButton: true, // <-- ONLY in MyShelfScreen
+                  BookCard(book: book),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Status: ${book.readingStatus}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

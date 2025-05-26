@@ -19,6 +19,18 @@ class _SearchScreenState extends State<SearchScreen> {
   String selectedCategory = 'All';
   bool isLoading = false;
   String selectedSort = 'latest';
+  String _getLabel(String? option) {
+    switch (option) {
+      case 'read':
+        return 'Read';
+      case 'set_as_reading':
+        return 'Reading';
+      case 'save_for_later':
+        return 'Saved for Later';
+      default:
+        return 'Want to read';
+    }
+  }
 
   @override
   void initState() {
@@ -165,67 +177,46 @@ class _SearchScreenState extends State<SearchScreen> {
               },
             ),
           ),
-
           Expanded(
-  child: isLoading
-      ? Center(child: CircularProgressIndicator())
-      : GridView.builder(
-          padding: const EdgeInsets.all(8),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.6,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
+            child:
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: books.length,
+                      itemBuilder: (context, index) {
+                        final book = books[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: BookCard(
+                            book: book,
+                            onOptionSelected: (option) async {
+                              final box = Hive.box<Book>('books');
+
+                              if (!book.isInBox) {
+                                await box.put(book.id, book);
+                              }
+                              final hiveBook = box.get(book.id)!;
+
+                              hiveBook.readingStatus = option;
+                              await hiveBook.save();
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Book marked as ${_getLabel(option)}',
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
           ),
-          itemCount: books.length,
-          itemBuilder: (context, index) {
-            final book = books[index];
-
-            return Stack(
-              children: [
-                BookCard(book: book), // Your custom book card
-                Positioned(
-  top: 8,
-  right: 8,
-  child: Container(
-    width: 32,
-    height: 32,
-
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(6), 
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black26,
-          blurRadius: 2,
-          offset: Offset(2, 2),
-        ),
-      ],
-    ),
-    child: Center(
-      child: IconButton(
-        padding: EdgeInsets.zero,
-      icon: Icon(Icons.bookmark_border, color: Colors.black),
-
-
-      onPressed: () async {
-        var box = Hive.box<Book>('savedBooks');
-        await box.put(book.id, book);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Saved for later!')),
-        );
-      },
-      )
-
-    ),
-  ),
-),
-
-              ],
-            );
-          },
-        ),
-          )
         ],
       ),
     );

@@ -1,55 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shelfie/models/books.dart';
+import 'package:shelfie/widgets/book_options_dropdown.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
-  final IconData? buttonIcon;
-  final VoidCallback? onButtonPressed;
-  final VoidCallback? onSetAsReading;
-  final bool showSetAsReadingButton;
+  final void Function(String)? onOptionSelected;
 
-  const BookCard({
-    super.key,
-    required this.book,
-    this.buttonIcon,
-    this.onButtonPressed,
-    this.onSetAsReading,
-    this.showSetAsReadingButton = false, 
-  });
+  const BookCard({super.key, required this.book, this.onOptionSelected});
 
   @override
   Widget build(BuildContext context) {
+    final fixedImageUrl = book.imageUrl?.replaceFirst('http://', 'https://');
+
     return Card(
-      child: Column(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child:
-                book.imageUrl != null && book.imageUrl!.isNotEmpty
-                    ? Image.network(
-                      book.imageUrl!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    )
-                    : Container(color: Colors.grey),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              book.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              bottomLeft: Radius.circular(12),
+            ),
+            child: SizedBox(
+              width: 100,
+              height: 150,
+              child:
+                  fixedImageUrl != null && fixedImageUrl.isNotEmpty
+                      ? Image.network(
+                        fixedImageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                const Icon(Icons.broken_image),
+                      )
+                      : const Icon(Icons.book, size: 50, color: Colors.grey),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
-              book.authors.join(', '),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF6C6C6C)),
+
+          // Book info section
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    book.authors.join(', '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: const Color(0xFF6C6C6C),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    book.publishedDate,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: const Color(0xFF6C6C6C),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(),
+                    child: BookOptionsDropdown(
+                      book: book,
+                      onOptionSelected: onOptionSelected ?? (_) {},
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
